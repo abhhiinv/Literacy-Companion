@@ -12,19 +12,23 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+console.log("Initializing Firebase...");
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+console.log("Firebase initialized successfully");
 
-// Enable offline persistence
-enableIndexedDbPersistence(db).catch((err) => {
+// Simple persistence check
+try {
+  enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === 'failed-precondition') {
-        // Multiple tabs open, persistence can only be enabled in one tab at a time.
-        console.warn('Persistence failed: Multiple tabs open');
+      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
     } else if (err.code === 'unimplemented') {
-        // The current browser does not support all of the features required to enable persistence
-        console.warn('Persistence failed: Browser does not support it');
+      console.warn('The current browser does not support persistence.');
     }
-});
+  });
+} catch (e) {
+  console.error('Persistence failed', e);
+}
 
 export { auth, db };

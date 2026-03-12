@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, type User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -36,35 +37,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      if (user) {
-        // Fetch user data from Firestore
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          setUserData(userDoc.data() as UserData);
-        } else {
-          // Initialize new user data
-          const newUserData: UserData = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            readingLevel: 'beginner',
-            streak: 0,
-            lastActive: null
-          };
-          await setDoc(userDocRef, newUserData);
-          setUserData(newUserData);
-        }
-      } else {
-        setUserData(null);
+    console.log("AuthProvider mounted, setting up onAuthStateChanged...");
+    
+    // Safety timeout: if Firebase doesn't respond in 10 seconds, stop loading
+    const timer = setTimeout(() => {
+      if (loading) {
+        console.warn("Firebase Auth timed out. Proceeding...");
+        setLoading(false);
       }
-      setLoading(false);
+    }, 10000);
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("onAuthStateChanged fired. User:", user ? user.email : "none");
+      clearTimeout(timer);
+      setCurrentUser(user);
+      try {
+        if (user) {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            setUserData(userDoc.data() as UserData);
+          } else {
+            const newUserData: UserData = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              readingLevel: 'beginner',
+              streak: 0,
+              lastActive: null
+            };
+            await setDoc(userDocRef, newUserData);
+            setUserData(newUserData);
+          }
+        } else {
+          setUserData(null);
+        }
+      } catch (error) {
+        console.error("Firebase Auth/Firestore error:", error);
+      } finally {
+        setLoading(false);
+        console.log("Auth loading complete");
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   const updateReadingLevel = async (level: string) => {
@@ -114,7 +134,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status"></div>
+            <p className="lead text-muted">Starting Literacy Companion...</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };
