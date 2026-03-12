@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Card, Row, Col, Form, Button, Alert, ListGroup, Badge } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiActivity, FiAward, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiUser, FiAward, FiSettings, FiLogOut } from 'react-icons/fi';
 import { auth } from '../services/firebase';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';

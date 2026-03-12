@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Spinner, Alert, Card, Form, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Button, Spinner, Alert, Card, Form } from 'react-bootstrap';
 import { generateStory } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { FiVolume2, FiRotateCcw, FiArrowRight, FiCheckCircle } from 'react-icons/fi';

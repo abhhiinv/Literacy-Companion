@@ -3,7 +3,7 @@ import { Container, Card, Form, Button, Alert, Row, Col } from 'react-bootstrap'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
+import { FiMail, FiLock } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 
 const Login: React.FC = () => {

@@ -12,7 +12,7 @@ import { auth } from './services/firebase';
 import './App.css';
 
 const App: React.FC = () => {
-  const { currentUser, userData } = useAuth();
+  const { currentUser } = useAuth();
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -43,9 +43,9 @@ const App: React.FC = () => {
                   <FiLogOut className="me-1" /> Sign Out
                 </Button>
               ) : (
-                <Button as={Link} to="/login" variant="primary" className="ms-lg-3 rounded-pill px-4">
+                <Link to="/login" className="btn btn-primary ms-lg-3 rounded-pill px-4">
                   Login
-                </Button>
+                </Link>
               )}
             </Nav>
           </Navbar.Collapse>

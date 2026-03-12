@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -12,12 +12,12 @@ const Home: React.FC = () => {
             Empowering adults to read and write through personalized, interactive stories.
           </p>
           <div className="d-grid gap-3 d-sm-flex justify-content-sm-center">
-            <Button as={Link} to="/learning" variant="primary" size="lg" className="px-4">
+            <Link to="/learning" className="btn btn-primary btn-lg px-4">
               Start Learning
-            </Button>
-            <Button as={Link} to="/profile" variant="outline-secondary" size="lg" className="px-4">
+            </Link>
+            <Link to="/profile" className="btn btn-outline-secondary btn-lg px-4">
               My Progress
-            </Button>
+            </Link>
           </div>
         </Col>
       </Row>
