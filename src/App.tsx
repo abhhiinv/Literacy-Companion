@@ -20,30 +20,30 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container d-flex flex-column min-vh-100 bg-light">
-      <Navbar bg="white" expand="lg" className="shadow-sm py-3 sticky-top">
+      <Navbar bg="white" expand="lg" className="shadow-sm py-3 py-lg-4 sticky-top border-bottom border-2">
         <Container>
-          <Navbar.Brand as={Link} to="/" className="fw-bold fs-4 text-primary d-flex align-items-center">
-            <FiBookOpen className="me-2" />
-            Literacy Companion
+          <Navbar.Brand as={Link} to="/" className="fw-bold fs-3 text-primary d-flex align-items-center">
+            <FiBookOpen className="me-3" size={36} />
+            <span style={{ letterSpacing: '-0.5px' }}>Literacy Companion</span>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0 shadow-none" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto align-items-center">
-              <Nav.Link as={NavLink} to="/" className="mx-2 d-flex align-items-center">
-                <FiHome className="me-1" /> Home
+            <Nav className="ms-auto align-items-center gap-2">
+              <Nav.Link as={NavLink} to="/" className="mx-2 px-3 py-2 fs-5 fw-medium d-flex align-items-center rounded-3">
+                <FiHome className="me-2" /> Home
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/learning" className="mx-2 d-flex align-items-center">
-                <FiActivity className="me-1" /> Learning
+              <Nav.Link as={NavLink} to="/learning" className="mx-2 px-3 py-2 fs-5 fw-medium d-flex align-items-center rounded-3">
+                <FiActivity className="me-2" /> Start Learning
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/profile" className="mx-2 d-flex align-items-center">
-                <FiUser className="me-1" /> Profile
+              <Nav.Link as={NavLink} to="/profile" className="mx-2 px-3 py-2 fs-5 fw-medium d-flex align-items-center rounded-3">
+                <FiUser className="me-2" /> My Profile
               </Nav.Link>
               {currentUser ? (
-                <Button onClick={handleLogout} variant="outline-danger" className="ms-lg-3 rounded-pill px-4 d-flex align-items-center">
-                  <FiLogOut className="me-1" /> Sign Out
+                <Button onClick={handleLogout} variant="outline-danger" className="ms-lg-3 rounded-pill px-4 py-2 fs-5 d-flex align-items-center border-2 fw-bold">
+                  <FiLogOut className="me-2" /> Sign Out
                 </Button>
               ) : (
-                <Link to="/login" className="btn btn-primary ms-lg-3 rounded-pill px-4">
+                <Link to="/login" className="btn btn-primary ms-lg-3 rounded-pill px-5 py-2 fs-5 fw-bold shadow">
                   Login
                 </Link>
               )}
@@ -52,7 +52,7 @@ const App: React.FC = () => {
         </Container>
       </Navbar>
 
-      <main className="flex-grow-1">
+      <main className="flex-grow-1 py-4 py-lg-5">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/learning" element={<Learning />} />

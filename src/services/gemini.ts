@@ -11,8 +11,6 @@ const model = genAI.getGenerativeModel({
 });
 
 export const generateStory = async (level: string, topic: string) => {
-  console.log(`Generating story for level: ${level}, topic: ${topic}`);
-  
   const prompt = `You are a patient literacy teacher. Generate a very short, engaging story for an adult learner at the ${level} reading level about ${topic}. After the story, provide 3 simple reading comprehension questions with 3 multiple-choice answers each. 
 
 Format the output as JSON with exactly this structure: 
@@ -28,7 +26,6 @@ Format the output as JSON with exactly this structure:
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    console.log("Gemini raw response:", text);
     
     // Strip code blocks if present
     const jsonString = text.replace(/```json|```/g, "").trim();

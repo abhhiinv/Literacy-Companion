@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Spinner, Alert, Card, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Spinner, Alert, Card, Form, Badge } from 'react-bootstrap';
 import { generateStory } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
-import { FiVolume2, FiRotateCcw, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
+import { FiVolume2, FiRotateCcw, FiArrowRight, FiCheckCircle, FiBookOpen, FiHelpCircle } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 const Learning: React.FC = () => {
   const { userData, currentUser, completeStory } = useAuth();
@@ -72,45 +73,61 @@ const Learning: React.FC = () => {
       <Row className="justify-content-center">
         <Col md={10} lg={8}>
           {!story ? (
-            <div className="text-center">
-              <h1 className="display-5 fw-bold mb-4">What would you like to read today?</h1>
-              <p className="lead text-muted mb-5">Pick a topic and we'll create a story just for you.</p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h1 className="display-4 fw-bold mb-3 text-primary">What would you like to read today?</h1>
+              <p className="lead mb-5 fs-4">Pick a topic and we'll create a story just for you.</p>
 
-              <Row className="mb-4 text-start">
-                <Col sm={6}>
-                  <Card className="border-0 shadow-sm p-3 mb-3">
+              <Row className="mb-5 text-start g-4">
+                <Col md={6}>
+                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4">
                     <Form.Group>
-                      <Form.Label className="fw-bold h5">My Level:</Form.Label>
+                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center">
+                        <FiBookOpen className="me-2 text-primary" /> My Reading Level:
+                      </Form.Label>
                       <Form.Select
                         value={level}
                         onChange={(e) => setLevel(e.target.value)}
                         size="lg"
-                        className="border-0 bg-light"
+                        className="border-2 py-3 px-4 fs-5 rounded-3 bg-white"
+                        style={{ border: '2px solid #e2e8f0' }}
                       >
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
+                        <option value="beginner">Beginner (Simple Words)</option>
+                        <option value="intermediate">Intermediate (Short Stories)</option>
+                        <option value="advanced">Advanced (Detailed Stories)</option>
                       </Form.Select>
+                      <Form.Text className="text-muted fs-6 mt-2 d-block">
+                        Choose a level that feels comfortable for you.
+                      </Form.Text>
                     </Form.Group>
                   </Card>
                 </Col>
-                <Col sm={6}>
-                  <Card className="border-0 shadow-sm p-3 mb-3">
+                <Col md={6}>
+                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4">
                     <Form.Group>
-                      <Form.Label className="fw-bold h5">Story Topic:</Form.Label>
+                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center">
+                        <FiHelpCircle className="me-2 text-primary" /> Story Topic:
+                      </Form.Label>
                       <Form.Select
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
                         size="lg"
-                        className="border-0 bg-light"
+                        className="border-2 py-3 px-4 fs-5 rounded-3 bg-white"
+                        style={{ border: '2px solid #e2e8f0' }}
                       >
                         <option value="everyday life">🏠 Everyday Life</option>
-                        <option value="work">💼 Working</option>
-                        <option value="shopping">🛒 Shopping</option>
-                        <option value="family">👨‍👩‍👧 Family</option>
-                        <option value="hobbies">🎨 Hobbies</option>
-                        <option value="health">🍎 Health</option>
+                        <option value="work">💼 Working & Careers</option>
+                        <option value="shopping">🛒 Practical Shopping</option>
+                        <option value="family">👨‍👩‍👧 Family & Community</option>
+                        <option value="hobbies">🎨 Hobbies & Fun</option>
+                        <option value="health">🍎 Staying Healthy</option>
                       </Form.Select>
+                      <Form.Text className="text-muted fs-6 mt-2 d-block">
+                        What are you interested in reading about?
+                      </Form.Text>
                     </Form.Group>
                   </Card>
                 </Col>
@@ -120,78 +137,122 @@ const Learning: React.FC = () => {
                 size="lg"
                 onClick={handleGenerateStory}
                 disabled={loading}
-                className="px-5 py-3 shadow rounded-pill"
+                className="px-5 py-4 shadow-lg rounded-pill fw-bold fs-4"
+                style={{ minWidth: '300px' }}
               >
-                {loading ? <><Spinner animation="border" size="sm" className="me-2" /> Creating your story...</> : 'Generate My Story'}
+                {loading ? (
+                  <><Spinner animation="border" size="sm" className="me-3" /> Creating your story...</>
+                ) : (
+                  'Create My Story'
+                )}
               </Button>
-              {error && <Alert variant="danger" className="mt-4">{error}</Alert>}
-            </div>
+              {error && <Alert variant="danger" className="mt-5 border-2 fw-bold">{error}</Alert>}
+            </motion.div>
           ) : (
-            <div className="animate__animated animate__fadeIn">
-              <Card className="shadow-lg border-0 mb-5 overflow-hidden rounded-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="animate-in"
+            >
+              <Card className="shadow-lg border-2 mb-5 overflow-hidden rounded-4">
                 <Card.Header className="bg-primary text-white py-4 px-4 d-flex justify-content-between align-items-center">
-                  <h2 className="h3 mb-0">{story.title}</h2>
-                  <Button variant="light" size="sm" onClick={() => handleSpeech(story.content)} className="rounded-circle p-2">
-                    <FiVolume2 size={24} />
+                  <div>
+                    <Badge bg="light" text="dark" className="text-uppercase mb-2 px-3 py-2 fw-bold" style={{ letterSpacing: '1px' }}>
+                      {level} level
+                    </Badge>
+                    <h2 className="h2 mb-0 fw-bold">{story.title}</h2>
+                  </div>
+                  <Button 
+                    variant="light" 
+                    size="lg" 
+                    onClick={() => handleSpeech(story.content)} 
+                    className="rounded-circle shadow-sm p-3 hover-scale d-flex align-items-center justify-content-center"
+                    title="Read aloud"
+                    style={{ width: '64px', height: '64px' }}
+                  >
+                    <FiVolume2 size={32} />
                   </Button>
                 </Card.Header>
-                <Card.Body className="p-4 p-md-5">
-                  <div className="story-content fs-3 lh-lg text-dark">
+                <Card.Body className="p-4 p-md-5 bg-white">
+                  <div className="story-content fs-3 lh-lg text-dark fw-medium">
                     {story.content.split(' ').map((word: string, i: number) => (
-                      <span
+                      <motion.span
                         key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.02 }}
                         onClick={() => handleWordClick(word)}
-                        className={`clickable-word me-1 rounded px-1 cursor-pointer transition-all ${highlightedWord === word ? 'bg-warning' : 'hover-bg-light'}`}
-                        style={{ cursor: 'pointer', transition: 'background-color 0.2s' }}
+                        className={`clickable-word me-1 rounded px-2 ${highlightedWord === word ? 'active-highlight' : ''}`}
+                        role="button"
+                        aria-label={`Read ${word}`}
                       >
                         {word}
-                      </span>
+                      </motion.span>
                     ))}
+                  </div>
+                  <div className="mt-5 p-4 bg-light rounded-4 text-center">
+                    <p className="mb-0 text-muted fs-5 fst-italic">
+                      <FiBookOpen className="me-2" /> 
+                      Tip: Click any word to hear it spoken aloud.
+                    </p>
                   </div>
                 </Card.Body>
               </Card>
 
-              <div className="mb-5">
-                <div className="d-flex align-items-center mb-4">
-                  <div className="bg-primary text-white rounded-circle p-2 me-3">
-                    <FiCheckCircle size={24} />
+              <div className="mb-5 pt-4">
+                <div className="d-flex align-items-center mb-5 justify-content-center">
+                  <div className="bg-primary text-white rounded-circle p-3 me-3 shadow-lg">
+                    <FiCheckCircle size={32} />
                   </div>
-                  <h3 className="mb-0">Quiz Time</h3>
+                  <h3 className="display-6 mb-0 fw-bold">Let's check what we learned!</h3>
                 </div>
 
                 {story.questions.map((q: any, idx: number) => (
-                  <Card key={idx} className="mb-4 border-0 shadow-sm rounded-4 p-3">
-                    <Card.Body>
-                      <h4 className="mb-4">{q.question}</h4>
-                      <Row className="g-3">
-                        {q.options.map((option: string, oIdx: number) => (
-                          <Col key={oIdx} sm={12}>
-                            <Button
-                              variant={
-                                showResults
-                                  ? (oIdx === q.answerIndex ? 'success' : (answers[idx] === oIdx ? 'danger' : 'outline-secondary'))
-                                  : (answers[idx] === oIdx ? 'primary' : 'outline-primary')
-                              }
-                              className="w-100 text-start py-3 px-4 rounded-3 fs-5 d-flex justify-content-between align-items-center"
-                              onClick={() => !showResults && handleAnswer(idx, oIdx)}
-                              disabled={showResults}
-                            >
-                              {option}
-                              {showResults && oIdx === q.answerIndex && <FiCheckCircle />}
-                            </Button>
-                          </Col>
-                        ))}
-                      </Row>
-                    </Card.Body>
-                  </Card>
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + idx * 0.1 }}
+                  >
+                    <Card className="mb-4 border-2 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                      <Card.Body className="p-0">
+                        <div className="d-flex align-items-start mb-4">
+                          <Badge bg="primary" className="rounded-circle p-3 me-4 fs-5" style={{ width: '48px', height: '48px' }}>
+                            {idx + 1}
+                          </Badge>
+                          <h4 className="display-6 mb-0 pt-1 lh-sm">{q.question}</h4>
+                        </div>
+                        <Row className="g-4">
+                          {q.options.map((option: string, oIdx: number) => (
+                            <Col key={oIdx} sm={12}>
+                              <Button
+                                variant={
+                                  showResults
+                                    ? (oIdx === q.answerIndex ? 'success' : (answers[idx] === oIdx ? 'danger' : 'outline-light border-2 text-muted bg-light'))
+                                    : (answers[idx] === oIdx ? 'primary' : 'outline-primary border-2')
+                                }
+                                className={`w-100 text-start py-4 px-4 rounded-4 fs-4 d-flex justify-content-between align-items-center border-2 transition-all shadow-sm ${!showResults && answers[idx] === oIdx ? 'fw-bold' : ''}`}
+                                onClick={() => !showResults && handleAnswer(idx, oIdx)}
+                                disabled={showResults}
+                              >
+                                {option}
+                                {showResults && oIdx === q.answerIndex && <FiCheckCircle size={28} />}
+                              </Button>
+                            </Col>
+                          ))}
+                        </Row>
+                      </Card.Body>
+                    </Card>
+                  </motion.div>
                 ))}
 
                 {!showResults ? (
-                  <div className="text-center mt-5">
+                  <div className="text-center mt-5 py-4">
                     <Button
                       variant="primary"
                       size="lg"
-                      className="px-5 py-3 rounded-pill shadow"
+                      className="px-5 py-4 rounded-pill shadow-lg fs-4 fw-bold"
+                      style={{ minWidth: '320px' }}
                       disabled={answers.length < story.questions.length}
                       onClick={handleShowResults}
                     >
@@ -199,24 +260,45 @@ const Learning: React.FC = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Card className="text-center p-5 border-0 shadow rounded-4 bg-white mt-5">
-                    <div className="display-1 mb-3">
-                      {score === story.questions.length ? '🎉' : '👏'}
-                    </div>
-                    <h2 className="mb-3">You got {score} out of {story.questions.length} right!</h2>
-                    <p className="lead text-muted mb-4">Great job practicing today. Every bit counts!</p>
-                    <div className="d-flex justify-content-center gap-3">
-                      <Button variant="primary" size="lg" onClick={handleGenerateStory} className="px-4 rounded-pill">
-                        Next Story <FiArrowRight className="ms-2" />
-                      </Button>
-                      <Button variant="outline-secondary" size="lg" onClick={() => setStory(null)} className="px-4 rounded-pill">
-                        <FiRotateCcw className="me-2" /> Change Topic
-                      </Button>
-                    </div>
-                  </Card>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                  >
+                    <Card className="text-center p-5 border-2 shadow-lg rounded-4 bg-white mt-5 overflow-hidden">
+                      <div className="display-1 mb-4">
+                        {score === story.questions.length ? '🎉' : '👏'}
+                      </div>
+                      <h2 className="display-4 fw-bold mb-3 text-primary">
+                        You got {score} out of {story.questions.length} right!
+                      </h2>
+                      <p className="lead fs-3 text-muted mb-5 px-md-5">
+                        {score === story.questions.length 
+                          ? "Perfect score! You're making amazing progress today." 
+                          : "Great effort! Every story makes you a better reader."}
+                      </p>
+                      <div className="d-flex flex-column flex-md-row justify-content-center gap-4">
+                        <Button 
+                          variant="primary" 
+                          size="lg" 
+                          onClick={handleGenerateStory} 
+                          className="px-5 py-4 rounded-pill fs-4 fw-bold shadow"
+                        >
+                          Read Next Story <FiArrowRight className="ms-2" />
+                        </Button>
+                        <Button 
+                          variant="outline-primary" 
+                          size="lg" 
+                          onClick={() => setStory(null)} 
+                          className="px-5 py-4 rounded-pill fs-4 fw-bold border-2"
+                        >
+                          <FiRotateCcw className="me-2" /> Change Topic
+                        </Button>
+                      </div>
+                    </Card>
+                  </motion.div>
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
         </Col>
       </Row>
