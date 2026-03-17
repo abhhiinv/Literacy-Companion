@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Spinner, Alert, Card, Form, Badge } from 'react-bootstrap';
 import { generateStory } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
-import { FiVolume2, FiRotateCcw, FiArrowRight, FiCheckCircle, FiBookOpen, FiHelpCircle } from 'react-icons/fi';
+import { FiRotateCcw, FiArrowRight, FiCheckCircle, FiBookOpen, FiHelpCircle, FiPause, FiPlay, FiSquare } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const Learning: React.FC = () => {
@@ -15,12 +15,14 @@ const Learning: React.FC = () => {
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [highlightedWord, setHighlightedWord] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (userData?.readingLevel) {
-      setLevel(userData.readingLevel);
-    }
-  }, [userData]);
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
   const handleShowResults = async () => {
     setShowResults(true);
@@ -46,15 +48,56 @@ const Learning: React.FC = () => {
   };
 
   const handleSpeech = (text: string) => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+      setIsPlaying(true);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.8; // Slower for learning
+    utterance.rate = 0.8;
+    
+    utterance.onstart = () => {
+      setIsPlaying(true);
+      setIsPaused(false);
+    };
+
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+    };
+
+    utterance.onerror = () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+    };
+
     window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePause = () => {
+    window.speechSynthesis.pause();
+    setIsPaused(true);
+    setIsPlaying(false);
+  };
+
+  const handleStop = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setIsPaused(false);
   };
 
   const handleWordClick = (word: string) => {
     setHighlightedWord(word);
     const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-    handleSpeech(cleanWord);
+    
+    // Independent short utterance for word clicks
+    const utterance = new SpeechSynthesisUtterance(cleanWord);
+    utterance.rate = 0.8;
+    window.speechSynthesis.speak(utterance);
+    
     setTimeout(() => setHighlightedWord(null), 1000);
   };
 
@@ -155,23 +198,50 @@ const Learning: React.FC = () => {
               className="animate-in"
             >
               <Card className="shadow-lg border-2 mb-5 overflow-hidden rounded-4">
-                <Card.Header className="bg-primary text-white py-4 px-4 d-flex justify-content-between align-items-center">
+                <Card.Header className="bg-primary text-white py-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                   <div>
                     <Badge bg="light" text="dark" className="text-uppercase mb-2 px-3 py-2 fw-bold" style={{ letterSpacing: '1px' }}>
                       {level} level
                     </Badge>
                     <h2 className="h2 mb-0 fw-bold">{story.title}</h2>
                   </div>
-                  <Button 
-                    variant="light" 
-                    size="lg" 
-                    onClick={() => handleSpeech(story.content)} 
-                    className="rounded-circle shadow-sm p-3 hover-scale d-flex align-items-center justify-content-center"
-                    title="Read aloud"
-                    style={{ width: '64px', height: '64px' }}
-                  >
-                    <FiVolume2 size={32} />
-                  </Button>
+                  <div className="d-flex gap-2">
+                    {isPlaying ? (
+                      <Button 
+                        variant="light" 
+                        size="lg" 
+                        onClick={handlePause} 
+                        className="rounded-circle shadow-sm p-3 hover-scale d-flex align-items-center justify-content-center"
+                        title="Pause"
+                        style={{ width: '64px', height: '64px' }}
+                      >
+                        <FiPause size={32} />
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="light" 
+                        size="lg" 
+                        onClick={() => handleSpeech(story.content)} 
+                        className="rounded-circle shadow-sm p-3 hover-scale d-flex align-items-center justify-content-center"
+                        title={isPaused ? "Resume" : "Read aloud"}
+                        style={{ width: '64px', height: '64px' }}
+                      >
+                        <FiPlay size={32} />
+                      </Button>
+                    )}
+                    {(isPlaying || isPaused) && (
+                      <Button 
+                        variant="outline-light" 
+                        size="lg" 
+                        onClick={handleStop} 
+                        className="rounded-circle shadow-sm p-3 hover-scale d-flex align-items-center justify-content-center border-2"
+                        title="Stop"
+                        style={{ width: '64px', height: '64px' }}
+                      >
+                        <FiSquare size={32} />
+                      </Button>
+                    )}
+                  </div>
                 </Card.Header>
                 <Card.Body className="p-4 p-md-5 bg-white">
                   <div className="story-content fs-3 lh-lg text-dark fw-medium">

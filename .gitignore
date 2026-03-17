@@ -39,11 +39,11 @@ public/sw.js
 public/workbox-*.js
 
 #agents
-.agents
-.claude
-.codex
-.cursor
-.gemini
-.kiro
-.opencode
-.pi
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.kiro/
+.opencode/
+.pi/

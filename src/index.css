@@ -1,29 +1,44 @@
 :root {
-  /* High Contrast Accessible Palette */
-  --primary-color: #1d4ed8; /* Deep Blue - WCAG AAA on White */
+  /* Default Light Mode */
+  --primary-color: #1d4ed8;
   --primary-dark: #1e3a8a;
   --secondary-color: #475569;
-  --accent-color: #c2410c; /* High Contrast Orange */
+  --accent-color: #c2410c;
   --success-color: #15803d;
   --danger-color: #b91c1c;
   
   --bg-color: #f8fafc;
   --card-bg: #ffffff;
-  --text-primary: #0f172a; /* Near Black for High Contrast */
+  --text-primary: #0f172a;
   --text-secondary: #334155;
+  --border-color: #e2e8f0;
+  --nav-bg: rgba(255, 255, 255, 0.9);
   
-  /* Accessible Spacing Scale */
+  /* Accessible Spacing & Typography (unchanged) */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 1.5rem;
   --space-lg: 2.5rem;
   --space-xl: 4rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2.25rem;
+}
+
+/* Dark Mode Overrides */
+[data-theme='dark'] {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border-color: #334155;
+  --nav-bg: rgba(15, 23, 42, 0.9);
   
-  /* Accessible Typography */
-  --font-size-base: 1.125rem; /* 18px */
-  --font-size-lg: 1.25rem;   /* 20px */
-  --font-size-xl: 1.5rem;    /* 24px */
-  --font-size-xxl: 2.25rem;  /* 36px */
+  --primary-color: #3b82f6;
+  --primary-dark: #60a5fa;
+  --secondary-color: #94a3b8;
+  --accent-color: #fb923c;
 }
 
 body {
@@ -37,56 +52,77 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   font-size: var(--font-size-base);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.nav-link.active {
-  color: var(--primary-color) !important;
-  font-weight: 700;
-  border-bottom: 3px solid var(--primary-color);
+.bg-light {
+  background-color: var(--bg-color) !important;
 }
 
-/* Accessible Buttons */
-.btn {
-  padding: 0.8rem 1.5rem;
-  font-weight: 600;
-  border-radius: 0.75rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 3.5rem; /* Large touch target */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.bg-white {
+  background-color: var(--card-bg) !important;
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: #ffffff;
+.text-dark {
+  color: var(--text-primary) !important;
 }
 
-.btn-primary:hover, .btn-primary:focus {
-  background-color: var(--primary-dark);
-  border-color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(29, 78, 216, 0.3);
+.text-muted {
+  color: var(--text-secondary) !important;
 }
 
-.btn-lg {
-  padding: 1rem 2rem;
-  font-size: var(--font-size-lg);
-}
-
-/* High Contrast Cards */
 .card {
-  border: 2px solid #e2e8f0;
+  background-color: var(--card-bg);
+  border: 2px solid var(--border-color);
   border-radius: 1.25rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.card:hover {
+.card-header {
+  border-bottom: 2px solid var(--border-color);
+}
+
+.form-control, .form-select {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
   border-color: var(--primary-color);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.25rem rgba(29, 78, 216, 0.25);
+}
+
+/* Navbar Theme Support */
+.navbar {
+  background-color: var(--nav-bg) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--border-color) !important;
+}
+
+.nav-link {
+  color: var(--text-secondary) !important;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary-color) !important;
+}
+
+/* Modal/Dropdown Backgrounds */
+.dropdown-menu {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.dropdown-item {
+  color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-color);
+  color: var(--primary-color);
 }
 
 /* Interactive Story Text */

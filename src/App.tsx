@@ -1,18 +1,20 @@
 import React from 'react';
 import { Routes, Route, Link, NavLink, Navigate } from 'react-router-dom';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { FiBookOpen, FiUser, FiActivity, FiHome, FiLogOut } from 'react-icons/fi';
 import Home from './pages/Home';
 import Learning from './pages/Learning';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
+import { useTheme } from './context/ThemeContext';
 import { signOut } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { FiBookOpen, FiUser, FiActivity, FiHome, FiLogOut, FiMoon, FiSun } from 'react-icons/fi';
 import './App.css';
 
 const App: React.FC = () => {
   const { currentUser } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -26,9 +28,19 @@ const App: React.FC = () => {
             <FiBookOpen className="me-3" size={36} />
             <span style={{ letterSpacing: '-0.5px' }}>Literacy Companion</span>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0 shadow-none" />
+          <div className="d-flex align-items-center ms-auto ms-lg-0 order-lg-last">
+            <Button 
+              variant="link" 
+              onClick={toggleTheme} 
+              className="text-secondary p-2 me-2 rounded-circle hover-bg-light"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {theme === 'light' ? <FiMoon size={28} /> : <FiSun size={28} />}
+            </Button>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0 shadow-none p-0" />
+          </div>
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto align-items-center gap-2">
+            <Nav className="ms-auto align-items-center gap-2 mt-3 mt-lg-0">
               <Nav.Link as={NavLink} to="/" className="mx-2 px-3 py-2 fs-5 fw-medium d-flex align-items-center rounded-3">
                 <FiHome className="me-2" /> Home
               </Nav.Link>
