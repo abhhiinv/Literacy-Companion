@@ -105,31 +105,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateReadingLevel = async (level: string) => {
     if (currentUser) {
-      console.log("updateReadingLevel: Starting write to Firestore for", currentUser.uid, "Level:", level);
+      console.log("updateReadingLevel: Optimistic update starting for", level);
       
       try {
         const userDocRef = doc(db, 'users', currentUser.uid);
         
-        // With persistence enabled, setDoc should resolve almost immediately 
-        // to the local cache, allowing the UI to proceed.
-        await setDoc(userDocRef, { readingLevel: level }, { merge: true });
-        
-        console.log("updateReadingLevel: Local/Server write confirmed");
+        // 1. Update local state immediately (Optimistic)
         setUserData(prev => prev ? { ...prev, readingLevel: level } : null);
-      } catch (error: any) {
-        console.error("Error updating reading level in Firestore:", error);
         
-        // If it's a "client is offline" error, we can still proceed 
-        // because setDoc has been queued in the background.
-        if (error.code === 'unavailable' || error.message?.includes('offline')) {
-          console.warn("Update queued while offline. Continuing...");
-          setUserData(prev => prev ? { ...prev, readingLevel: level } : null);
-          return;
-        }
+        // 2. Fire and forget the Firestore write (Background sync)
+        // We don't 'await' this so the UI can proceed immediately.
+        // Firestore will automatically retry this write when the connection is stable.
+        setDoc(userDocRef, { readingLevel: level }, { merge: true }).catch(err => {
+          console.warn("Background Firestore update pending or failed:", err);
+        });
+        
+        console.log("updateReadingLevel: Optimistic update complete");
+      } catch (error: any) {
+        console.error("Critical error in updateReadingLevel:", error);
         throw error;
       }
-    } else {
-      console.warn("updateReadingLevel: No currentUser found during save attempt");
     }
   };
 
@@ -140,7 +135,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       let newStreak = userData.streak;
       if (lastActiveDate !== today) {
-        // Check if last active was yesterday
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
@@ -148,16 +142,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (lastActiveDate === yesterdayStr) {
           newStreak += 1;
         } else {
-          newStreak = 1; // Restart streak
+          newStreak = 1;
         }
         
+        const now = new Date().toISOString();
         const userDocRef = doc(db, 'users', currentUser.uid);
-        await setDoc(userDocRef, { 
-          streak: newStreak, 
-          lastActive: new Date().toISOString() 
-        }, { merge: true });
         
-        setUserData(prev => prev ? { ...prev, streak: newStreak, lastActive: new Date().toISOString() } : null);
+        // Optimistic update for streak
+        setUserData(prev => prev ? { ...prev, streak: newStreak, lastActive: now } : null);
+        
+        // Background sync
+        setDoc(userDocRef, { 
+          streak: newStreak, 
+          lastActive: now 
+        }, { merge: true }).catch(err => {
+          console.warn("Background streak update pending:", err);
+        });
       }
     }
   };
