@@ -28,6 +28,32 @@ An AI-powered interactive literacy app built to support **UN SDG 4.6** — elimi
 | Backend | Firebase (Auth + Firestore) |
 | Offline | Service Workers (Vite PWA) + Firestore Offline Persistence |
 
+## Environment Variables
+
+Create a `.env` file in the root of the project with these settings:
+
+```env
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_GEMINI_API_KEY=your_gemini_api_key
+```
+
+> Never commit your `.env` file. It is already excluded via `.gitignore`.
+
+## Deployment
+
+This app is deployed on **Firebase Hosting**.
+
+```bash
+firebase deploy
+```
+
+Make sure your Firestore security rules allow read/write on `/users/{userId}` for authenticated users.
+
 ---
 
 ## Getting Started
@@ -99,4 +125,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-*Built to empower adults through literacy. Supporting UN SDG 4.6.*
+*Built to empower adults through literacy. Supporting UN SDG 4.6 | Entropic Minds*

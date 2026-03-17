@@ -15,14 +15,17 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   const handleUpdateLevel = async () => {
+    console.log("handleUpdateLevel called with level:", level);
     setUpdating(true);
     try {
       await updateReadingLevel(level);
+      console.log("updateReadingLevel promise resolved");
       setMessage('Reading level updated successfully!');
     } catch (err) {
-      console.error(err);
+      console.error("handleUpdateLevel error:", err);
       setMessage('Failed to update reading level.');
     } finally {
+      console.log("handleUpdateLevel finally block reached");
       setUpdating(false);
       setTimeout(() => setMessage(null), 3000);
     }
