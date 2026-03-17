@@ -76,7 +76,7 @@ const App: React.FC = () => {
 
       <footer className="bg-white py-4 mt-auto border-top">
         <Container className="text-center text-muted">
-          <p className="mb-0">&copy; {new Date().getFullYear()} Literacy Companion. Supporting SDG 4.6.</p>
+          <p className="mb-0">&copy; {new Date().getFullYear()} Literacy Companion | Entropic Minds</p>
         </Container>
       </footer>
     </div>
