@@ -126,40 +126,40 @@ const Learning: React.FC = () => {
 
               <Row className="mb-5 text-start g-4">
                 <Col md={6}>
-                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4">
+                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4 theme-bg-surface">
                     <Form.Group>
-                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center">
+                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center theme-text-primary">
                         <FiBookOpen className="me-2 text-primary" /> My Reading Level:
                       </Form.Label>
                       <Form.Select
                         value={level}
                         onChange={(e) => setLevel(e.target.value)}
                         size="lg"
-                        className="border-2 py-3 px-4 fs-5 rounded-3 bg-white"
-                        style={{ border: '2px solid #e2e8f0' }}
+                        className="border-2 py-3 px-4 fs-5 rounded-3 theme-bg-surface theme-text-primary"
+                        style={{ border: '2px solid var(--border-color)' }}
                       >
                         <option value="beginner">Beginner (Simple Words)</option>
                         <option value="intermediate">Intermediate (Short Stories)</option>
                         <option value="advanced">Advanced (Detailed Stories)</option>
                       </Form.Select>
-                      <Form.Text className="text-muted fs-6 mt-2 d-block">
+                      <Form.Text className="theme-text-secondary fs-6 mt-2 d-block">
                         Choose a level that feels comfortable for you.
                       </Form.Text>
                     </Form.Group>
                   </Card>
                 </Col>
                 <Col md={6}>
-                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4">
+                  <Card className="border-2 shadow-sm p-4 h-100 rounded-4 theme-bg-surface">
                     <Form.Group>
-                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center">
+                      <Form.Label className="fw-bold h4 mb-3 d-flex align-items-center theme-text-primary">
                         <FiHelpCircle className="me-2 text-primary" /> Story Topic:
                       </Form.Label>
                       <Form.Select
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
                         size="lg"
-                        className="border-2 py-3 px-4 fs-5 rounded-3 bg-white"
-                        style={{ border: '2px solid #e2e8f0' }}
+                        className="border-2 py-3 px-4 fs-5 rounded-3 theme-bg-surface theme-text-primary"
+                        style={{ border: '2px solid var(--border-color)' }}
                       >
                         <option value="everyday life">🏠 Everyday Life</option>
                         <option value="work">💼 Working & Careers</option>
@@ -168,7 +168,7 @@ const Learning: React.FC = () => {
                         <option value="hobbies">🎨 Hobbies & Fun</option>
                         <option value="health">🍎 Staying Healthy</option>
                       </Form.Select>
-                      <Form.Text className="text-muted fs-6 mt-2 d-block">
+                      <Form.Text className="theme-text-secondary fs-6 mt-2 d-block">
                         What are you interested in reading about?
                       </Form.Text>
                     </Form.Group>
@@ -243,8 +243,8 @@ const Learning: React.FC = () => {
                     )}
                   </div>
                 </Card.Header>
-                <Card.Body className="p-4 p-md-5 bg-white">
-                  <div className="story-content fs-3 lh-lg text-dark fw-medium">
+                <Card.Body className="p-4 p-md-5 theme-bg-surface">
+                  <div className="story-content fs-3 lh-lg theme-text-primary fw-medium">
                     {story.content.split(' ').map((word: string, i: number) => (
                       <motion.span
                         key={i}
@@ -260,9 +260,9 @@ const Learning: React.FC = () => {
                       </motion.span>
                     ))}
                   </div>
-                  <div className="mt-5 p-4 bg-light rounded-4 text-center">
-                    <p className="mb-0 text-muted fs-5 fst-italic">
-                      <FiBookOpen className="me-2" /> 
+                  <div className="mt-5 p-4 theme-bg-body rounded-4 text-center">
+                    <p className="mb-0 theme-text-secondary fs-5 fst-italic">
+                      <FiBookOpen className="me-2 text-primary" /> 
                       Tip: Click any word to hear it spoken aloud.
                     </p>
                   </div>
@@ -274,7 +274,7 @@ const Learning: React.FC = () => {
                   <div className="bg-primary text-white rounded-circle p-3 me-3 shadow-lg">
                     <FiCheckCircle size={32} />
                   </div>
-                  <h3 className="display-6 mb-0 fw-bold">Let's check what we learned!</h3>
+                  <h3 className="display-6 mb-0 fw-bold theme-text-primary">Let's check what we learned!</h3>
                 </div>
 
                 {story.questions.map((q: any, idx: number) => (
@@ -284,13 +284,13 @@ const Learning: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 + idx * 0.1 }}
                   >
-                    <Card className="mb-4 border-2 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <Card className="mb-4 border-2 shadow-sm rounded-4 p-4 p-md-5 theme-bg-surface">
                       <Card.Body className="p-0">
                         <div className="d-flex align-items-start mb-4">
                           <Badge bg="primary" className="rounded-circle p-3 me-4 fs-5" style={{ width: '48px', height: '48px' }}>
                             {idx + 1}
                           </Badge>
-                          <h4 className="display-6 mb-0 pt-1 lh-sm">{q.question}</h4>
+                          <h4 className="display-6 mb-0 pt-1 lh-sm theme-text-primary">{q.question}</h4>
                         </div>
                         <Row className="g-4">
                           {q.options.map((option: string, oIdx: number) => (
@@ -298,7 +298,7 @@ const Learning: React.FC = () => {
                               <Button
                                 variant={
                                   showResults
-                                    ? (oIdx === q.answerIndex ? 'success' : (answers[idx] === oIdx ? 'danger' : 'outline-light border-2 text-muted bg-light'))
+                                    ? (oIdx === q.answerIndex ? 'success' : (answers[idx] === oIdx ? 'danger' : 'outline-light border-2 theme-text-secondary theme-bg-body'))
                                     : (answers[idx] === oIdx ? 'primary' : 'outline-primary border-2')
                                 }
                                 className={`w-100 text-start py-4 px-4 rounded-4 fs-4 d-flex justify-content-between align-items-center border-2 transition-all shadow-sm ${!showResults && answers[idx] === oIdx ? 'fw-bold' : ''}`}
@@ -334,14 +334,14 @@ const Learning: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                   >
-                    <Card className="text-center p-5 border-2 shadow-lg rounded-4 bg-white mt-5 overflow-hidden">
+                    <Card className="text-center p-5 border-2 shadow-lg rounded-4 theme-bg-surface mt-5 overflow-hidden">
                       <div className="display-1 mb-4">
                         {score === story.questions.length ? '🎉' : '👏'}
                       </div>
                       <h2 className="display-4 fw-bold mb-3 text-primary">
                         You got {score} out of {story.questions.length} right!
                       </h2>
-                      <p className="lead fs-3 text-muted mb-5 px-md-5">
+                      <p className="lead fs-3 theme-text-secondary mb-5 px-md-5">
                         {score === story.questions.length 
                           ? "Perfect score! You're making amazing progress today." 
                           : "Great effort! Every story makes you a better reader."}

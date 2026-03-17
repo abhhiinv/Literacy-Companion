@@ -54,26 +54,26 @@ const Profile: React.FC = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Card className="border-2 shadow-lg p-4 p-md-5 text-center rounded-5 bg-white">
-              <div className="bg-primary-subtle rounded-circle d-inline-flex p-4 mx-auto mb-4 border border-primary border-2">
+            <Card className="border-2 shadow-lg p-4 p-md-5 text-center rounded-5 theme-bg-surface">
+              <div className="theme-bg-primary-subtle rounded-circle d-inline-flex p-4 mx-auto mb-4 border border-primary border-2">
                 <FiUser size={80} className="text-primary" />
               </div>
-              <Card.Title className="display-6 fw-bold mb-2">
+              <Card.Title className="display-6 fw-bold mb-2 theme-text-primary">
                 {userData?.displayName || currentUser.email?.split('@')[0]}
               </Card.Title>
-              <Card.Subtitle className="fs-5 text-muted mb-5">
+              <Card.Subtitle className="fs-5 theme-text-secondary mb-5">
                 {currentUser.email}
               </Card.Subtitle>
               
-              <div className="d-flex justify-content-center gap-4 mb-5 p-4 bg-light rounded-4 border-2">
+              <div className="d-flex justify-content-center gap-4 mb-5 p-4 theme-bg-body rounded-4 border-2 border-theme">
                 <div className="text-center">
                   <div className="display-5 mb-0 fw-bold text-primary">{userData?.streak || 0}</div>
-                  <div className="text-muted fw-bold text-uppercase small" style={{ letterSpacing: '1px' }}>Day Streak</div>
+                  <div className="theme-text-secondary fw-bold text-uppercase small" style={{ letterSpacing: '1px' }}>Day Streak</div>
                 </div>
-                <div className="vr opacity-10 mx-2"></div>
+                <div className="vr opacity-10 mx-2 border-theme"></div>
                 <div className="text-center">
                   <div className="display-5 mb-0 fw-bold text-primary text-capitalize">{userData?.readingLevel?.charAt(0) || 'B'}</div>
-                  <div className="text-muted fw-bold text-uppercase small" style={{ letterSpacing: '1px' }}>Level</div>
+                  <div className="theme-text-secondary fw-bold text-uppercase small" style={{ letterSpacing: '1px' }}>Level</div>
                 </div>
               </div>
 
@@ -93,7 +93,7 @@ const Profile: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Card className="border-2 shadow-lg p-4 p-md-5 mb-5 rounded-5 bg-white">
+            <Card className="border-2 shadow-lg p-4 p-md-5 mb-5 rounded-5 theme-bg-surface">
               <h4 className="display-6 fw-bold d-flex align-items-center mb-5 text-primary">
                 <FiSettings className="me-3" size={40} /> My Preferences
               </h4>
@@ -107,13 +107,13 @@ const Profile: React.FC = () => {
               )}
               
               <Form.Group className="mb-5">
-                <Form.Label className="fw-bold fs-4 mb-3">Adjust My Reading Level:</Form.Label>
+                <Form.Label className="fw-bold fs-4 mb-3 theme-text-primary">Adjust My Reading Level:</Form.Label>
                 <Form.Select 
                   value={level} 
                   onChange={(e) => setLevel(e.target.value)}
                   size="lg"
-                  className="mb-4 py-3 px-4 fs-5 border-2 rounded-3 bg-white"
-                  style={{ border: '2px solid #e2e8f0' }}
+                  className="mb-4 py-3 px-4 fs-5 border-2 rounded-3 theme-bg-surface theme-text-primary"
+                  style={{ border: '2px solid var(--border-color)' }}
                 >
                   <option value="beginner">Beginner (Short words & simple sentences)</option>
                   <option value="intermediate">Intermediate (Compound sentences)</option>
@@ -131,19 +131,19 @@ const Profile: React.FC = () => {
               </Form.Group>
             </Card>
 
-            <Card className="border-2 shadow-lg p-4 p-md-5 rounded-5 bg-white">
+            <Card className="border-2 shadow-lg p-4 p-md-5 rounded-5 theme-bg-surface">
               <h4 className="display-6 fw-bold d-flex align-items-center mb-5 text-primary">
                 <FiAward className="me-3" size={40} /> My Achievements
               </h4>
               <ListGroup variant="flush">
-                <ListGroup.Item className="px-0 py-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <ListGroup.Item className="px-0 py-4 border-bottom border-theme d-flex justify-content-between align-items-center theme-bg-surface">
                   <div className="d-flex align-items-center">
-                    <div className="bg-warning-subtle p-4 rounded-circle me-4 shadow-sm border border-warning border-2">
+                    <div className="theme-bg-warning-subtle p-4 rounded-circle me-4 shadow-sm border border-warning border-2">
                       <span className="fs-3">🔥</span>
                     </div>
                     <div>
-                      <h5 className="fs-3 fw-bold mb-1">First Spark</h5>
-                      <p className="fs-5 text-muted mb-0">Completed your first daily story.</p>
+                      <h5 className="fs-3 fw-bold mb-1 theme-text-primary">First Spark</h5>
+                      <p className="fs-5 theme-text-secondary mb-0">Completed your first daily story.</p>
                     </div>
                   </div>
                   {userData?.streak && userData.streak > 0 ? (
@@ -152,14 +152,14 @@ const Profile: React.FC = () => {
                     <Badge bg="secondary" className="fs-5 px-4 py-2 rounded-pill opacity-50">Locked</Badge>
                   )}
                 </ListGroup.Item>
-                <ListGroup.Item className="px-0 py-4 border-0 d-flex justify-content-between align-items-center">
+                <ListGroup.Item className="px-0 py-4 border-0 d-flex justify-content-between align-items-center theme-bg-surface">
                   <div className="d-flex align-items-center">
-                    <div className="bg-primary-subtle p-4 rounded-circle me-4 shadow-sm border border-primary border-2">
+                    <div className="theme-bg-primary-subtle p-4 rounded-circle me-4 shadow-sm border border-primary border-2">
                       <span className="fs-3">📚</span>
                     </div>
                     <div>
-                      <h5 className="fs-3 fw-bold mb-1">Bookworm</h5>
-                      <p className="fs-5 text-muted mb-0">Read stories 3 days in a row.</p>
+                      <h5 className="fs-3 fw-bold mb-1 theme-text-primary">Bookworm</h5>
+                      <p className="fs-5 theme-text-secondary mb-0">Read stories 3 days in a row.</p>
                     </div>
                   </div>
                   {userData?.streak && userData.streak >= 3 ? (
