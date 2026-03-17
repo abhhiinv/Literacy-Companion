@@ -47,3 +47,6 @@ public/workbox-*.js
 .kiro/
 .opencode/
 .pi/
+
+.impeccable.md
+README.txt
