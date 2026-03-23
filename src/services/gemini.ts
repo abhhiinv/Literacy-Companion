@@ -7,7 +7,10 @@ console.log("Initializing Gemini AI with API Key:", API_KEY ? "Present" : "Missi
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
+  model: "gemini-3-flash",
+  generationConfig: {
+    responseMimeType: "application/json",
+  },
 });
 
 export const generateStory = async (level: string, topic: string) => {
@@ -25,11 +28,7 @@ Format the output as JSON with exactly this structure:
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text = response.text();
-    
-    // Strip code blocks if present
-    const jsonString = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(jsonString);
+    return JSON.parse(response.text());
   } catch (error) {
     console.error("Gemini Generation Error:", error);
     throw error;
