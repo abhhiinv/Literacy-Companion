@@ -7,16 +7,13 @@ console.log("Initializing Gemini AI with API Key:", API_KEY ? "Present" : "Missi
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-3-flash",
-  generationConfig: {
-    responseMimeType: "application/json",
-  },
+  model: "gemini-2.5-flash-lite",
 });
 
 export const generateStory = async (level: string, topic: string) => {
   const prompt = `You are a patient literacy teacher. Generate a very short, engaging story for an adult learner at the ${level} reading level about ${topic}. After the story, provide 3 simple reading comprehension questions with 3 multiple-choice answers each. 
 
-Format the output as JSON with exactly this structure: 
+Format the output as a valid JSON object (no markdown blocks, just the raw JSON) with exactly this structure: 
 { 
   "title": "Story Title", 
   "content": "Story content here...", 
@@ -28,7 +25,10 @@ Format the output as JSON with exactly this structure:
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return JSON.parse(response.text());
+    const text = response.text();
+    // Clean up markdown code blocks if the model included them
+    const jsonString = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(jsonString);
   } catch (error) {
     console.error("Gemini Generation Error:", error);
     throw error;

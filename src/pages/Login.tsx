@@ -3,9 +3,9 @@ import { Container, Card, Form, Button, Alert, Row, Col, Spinner } from 'react-b
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiUserPlus, FiLogIn } from 'react-icons/fi';
+import { FiMail, FiLock, FiUserPlus, FiLogIn, FiChevronRight } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -45,106 +45,113 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center pt-lg-5">
+    <Container className="py-5 py-lg-6">
+      <Row className="justify-content-center">
         <Col md={8} lg={6} xl={5}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <Card className="border-2 shadow-lg p-4 p-md-5 rounded-5 overflow-hidden bg-white">
-              <Card.Body className="p-0">
-                <div className="text-center mb-5">
-                  <h1 className="display-5 fw-bold mb-3 text-primary">
-                    {isLogin ? 'Welcome Back' : 'Create Account'}
-                  </h1>
-                  <p className="lead fs-5 text-muted">
-                    {isLogin ? 'Sign in to continue your reading journey.' : 'Join us to start learning today.'}
-                  </p>
-                </div>
+            <Card className="border-theme border-2 shadow-xl p-4 p-md-5 rounded-5 overflow-hidden">
+              <div className="text-center mb-5">
+                <h1 className="display-4 fw-bold mb-3">
+                  {isLogin ? 'Welcome Back' : 'Create Account'}
+                </h1>
+                <p className="fs-5 theme-text-secondary">
+                  {isLogin ? 'Sign in to continue your journey.' : 'Join us to start learning today.'}
+                </p>
+              </div>
 
-                {error && <Alert variant="danger" className="mb-4 border-2 fw-bold">{error}</Alert>}
-                
-                <Form onSubmit={handleAuth}>
-                  <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold fs-5 d-flex align-items-center mb-2">
-                      <FiMail className="me-2 text-primary" /> Email Address
-                    </Form.Label>
+              <AnimatePresence mode="wait">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <Alert variant="danger" className="mb-4 border-2 fw-bold rounded-4">
+                      {error}
+                    </Alert>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <Form onSubmit={handleAuth}>
+                <Form.Group className="mb-4">
+                  <Form.Label className="fw-bold fs-5 mb-2">Email Address</Form.Label>
+                  <div className="position-relative">
+                    <FiMail className="position-absolute top-50 translate-middle-y ms-3 theme-text-muted" size={20} />
                     <Form.Control
                       type="email"
-                      placeholder="e.g. name@example.com"
-                      size="lg"
-                      className="py-3 px-4 border-2 rounded-3 fs-5"
+                      placeholder="name@example.com"
+                      className="py-3 ps-5 border-2"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      style={{ border: '2px solid #e2e8f0' }}
                     />
-                  </Form.Group>
-                  
-                  <Form.Group className="mb-5">
-                    <Form.Label className="fw-bold fs-5 d-flex align-items-center mb-2">
-                      <FiLock className="me-2 text-primary" /> Password
-                    </Form.Label>
+                  </div>
+                </Form.Group>
+                
+                <Form.Group className="mb-5">
+                  <Form.Label className="fw-bold fs-5 mb-2">Password</Form.Label>
+                  <div className="position-relative">
+                    <FiLock className="position-absolute top-50 translate-middle-y ms-3 theme-text-muted" size={20} />
                     <Form.Control
                       type="password"
                       placeholder="••••••••"
-                      size="lg"
-                      className="py-3 px-4 border-2 rounded-3 fs-5"
+                      className="py-3 ps-5 border-2"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      style={{ border: '2px solid #e2e8f0' }}
                     />
-                  </Form.Group>
-
-                  <div className="d-grid gap-3">
-                    <Button 
-                      variant="primary" 
-                      type="submit" 
-                      disabled={loading} 
-                      className="py-3 rounded-pill fs-4 fw-bold shadow shadow-primary"
-                    >
-                      {loading ? (
-                        <><Spinner animation="border" size="sm" className="me-3" /> Please wait...</>
-                      ) : isLogin ? (
-                        <><FiLogIn className="me-2" /> Sign In</>
-                      ) : (
-                        <><FiUserPlus className="me-2" /> Sign Up</>
-                      )}
-                    </Button>
                   </div>
-                </Form>
+                </Form.Group>
 
-                <div className="text-center my-5 position-relative">
-                  <hr className="my-0 border-2" />
-                  <span className="bg-white px-3 text-muted fw-bold position-absolute top-50 start-50 translate-middle">
-                    OR
-                  </span>
-                </div>
+                <Button 
+                  variant="primary" 
+                  type="submit" 
+                  disabled={loading} 
+                  className="w-100 py-3 fs-4 fw-bold shadow-lg rounded-pill"
+                >
+                  {loading ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : isLogin ? (
+                    <><FiLogIn className="me-2" /> Sign In</>
+                  ) : (
+                    <><FiUserPlus className="me-2" /> Sign Up</>
+                  )}
+                </Button>
+              </Form>
 
-                <div className="d-grid">
-                  <Button 
-                    variant="outline-primary" 
-                    onClick={handleGoogleLogin} 
-                    className="d-flex align-items-center justify-content-center py-3 rounded-pill fs-5 border-2 fw-bold bg-white"
-                  >
-                    <FcGoogle className="me-3 fs-3" /> Continue with Google
-                  </Button>
-                </div>
+              <div className="text-center my-5 position-relative">
+                <hr className="border-theme opacity-10" />
+                <span className="theme-bg-surface px-3 theme-text-muted fw-bold position-absolute top-50 start-50 translate-middle small">
+                  OR CONTINUE WITH
+                </span>
+              </div>
 
-                <div className="text-center mt-5">
+              <Button 
+                variant="outline-theme" 
+                onClick={handleGoogleLogin} 
+                className="w-100 py-3 rounded-pill fs-5 border-2 fw-bold d-flex align-items-center justify-content-center hover-scale"
+                style={{ background: 'var(--ui-surface)', borderColor: 'var(--ui-border)' }}
+              >
+                <FcGoogle className="me-3 fs-3" /> Google
+              </Button>
+
+              <div className="text-center mt-5">
+                <p className="theme-text-secondary mb-0">
+                  {isLogin ? "New to Literacy Companion?" : "Already have an account?"}
                   <Button 
                     variant="link" 
                     onClick={() => setIsLogin(!isLogin)} 
-                    className="text-decoration-none fs-5 fw-bold p-0"
-                    style={{ borderBottom: '2px solid currentColor' }}
+                    className="fw-bold p-0 ms-2 text-decoration-none text-primary"
                   >
-                    {isLogin ? "Need an account? Sign Up" : "Already have an account? Sign In"}
+                    {isLogin ? "Sign Up Free" : "Sign In Here"} <FiChevronRight />
                   </Button>
-                </div>
-              </Card.Body>
+                </p>
+              </div>
             </Card>
           </motion.div>
         </Col>

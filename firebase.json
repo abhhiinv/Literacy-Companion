@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "literacy-companion",
     "public": "dist",
     "ignore": [
       "firebase.json",

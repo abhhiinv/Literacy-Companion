@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, onSnapshot, query, orderBy, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 interface UserData {
   uid: string;
@@ -13,12 +13,25 @@ interface UserData {
   lastActive: string | null;
 }
 
+export interface SavedStory {
+  id: string;
+  title: string;
+  content: string;
+  questions: any[];
+  level: string;
+  topic: string;
+  createdAt: any;
+}
+
 interface AuthContextType {
   currentUser: User | null;
   userData: UserData | null;
+  savedStories: SavedStory[];
   loading: boolean;
   updateReadingLevel: (level: string) => Promise<void>;
   completeStory: () => Promise<void>;
+  saveStory: (story: any, level: string, topic: string) => Promise<void>;
+  deleteStory: (storyId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +47,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [savedStories, setSavedStories] = useState<SavedStory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,11 +61,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }, 10000);
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeStories: (() => void) | null = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       console.log("onAuthStateChanged fired. User:", user ? user.email : "none");
       clearTimeout(timer);
       setCurrentUser(user);
       
+      if (unsubscribeStories) unsubscribeStories();
+
       try {
         if (user) {
           const userDocRef = doc(db, 'users', user.uid);
@@ -61,13 +79,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userDoc = await getDoc(userDocRef);
           } catch (getDocError: any) {
             console.warn("Initial getDoc failed (possibly offline). Using local defaults.", getDocError);
-            // Don't throw - continue with default data so the app stays functional
           }
 
           if (userDoc?.exists()) {
             setUserData(userDoc.data() as UserData);
           } else {
-            // Document doesn't exist or we're offline and it's not cached
             const newUserData: UserData = {
               uid: user.uid,
               email: user.email,
@@ -77,7 +93,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               lastActive: null
             };
             
-            // This setDoc will now resolve immediately to the local cache if persistent
             try {
               await setDoc(userDocRef, newUserData, { merge: true });
             } catch (setDocError) {
@@ -86,8 +101,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             setUserData(newUserData);
           }
+
+          // Set up real-time listener for saved stories
+          const storiesRef = collection(db, 'users', user.uid, 'savedStories');
+          const q = query(storiesRef, orderBy('createdAt', 'desc'));
+          
+          unsubscribeStories = onSnapshot(q, (snapshot) => {
+            const stories: SavedStory[] = [];
+            snapshot.forEach((doc) => {
+              stories.push({ id: doc.id, ...doc.data() } as SavedStory);
+            });
+            setSavedStories(stories);
+          }, (err) => {
+            console.warn("Saved stories onSnapshot error:", err);
+          });
+
         } else {
           setUserData(null);
+          setSavedStories([]);
         }
       } catch (error) {
         console.error("Critical Firebase Auth/Firestore error:", error);
@@ -98,29 +129,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => {
-      unsubscribe();
+      unsubscribeAuth();
+      if (unsubscribeStories) unsubscribeStories();
       clearTimeout(timer);
     };
   }, []);
 
   const updateReadingLevel = async (level: string) => {
     if (currentUser) {
-      console.log("updateReadingLevel: Optimistic update starting for", level);
-      
       try {
         const userDocRef = doc(db, 'users', currentUser.uid);
-        
-        // 1. Update local state immediately (Optimistic)
         setUserData(prev => prev ? { ...prev, readingLevel: level } : null);
-        
-        // 2. Fire and forget the Firestore write (Background sync)
-        // We don't 'await' this so the UI can proceed immediately.
-        // Firestore will automatically retry this write when the connection is stable.
         setDoc(userDocRef, { readingLevel: level }, { merge: true }).catch(err => {
           console.warn("Background Firestore update pending or failed:", err);
         });
-        
-        console.log("updateReadingLevel: Optimistic update complete");
       } catch (error: any) {
         console.error("Critical error in updateReadingLevel:", error);
         throw error;
@@ -148,10 +170,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const now = new Date().toISOString();
         const userDocRef = doc(db, 'users', currentUser.uid);
         
-        // Optimistic update for streak
         setUserData(prev => prev ? { ...prev, streak: newStreak, lastActive: now } : null);
         
-        // Background sync
         setDoc(userDocRef, { 
           streak: newStreak, 
           lastActive: now 
@@ -162,12 +182,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const saveStory = async (story: any, level: string, topic: string) => {
+    if (currentUser) {
+      const storiesRef = collection(db, 'users', currentUser.uid, 'savedStories');
+      const newDocRef = doc(storiesRef);
+      const storyData = {
+        ...story,
+        level,
+        topic,
+        createdAt: serverTimestamp()
+      };
+      
+      // Optimistic update
+      setSavedStories(prev => [{ id: newDocRef.id, ...storyData, createdAt: new Date() }, ...prev]);
+      
+      // Background sync
+      setDoc(newDocRef, storyData).catch(err => {
+        console.warn("Background story save pending:", err);
+      });
+    }
+  };
+
+  const deleteStory = async (storyId: string) => {
+    if (currentUser) {
+      const storyRef = doc(db, 'users', currentUser.uid, 'savedStories', storyId);
+      
+      // Optimistic update
+      setSavedStories(prev => prev.filter(s => s.id !== storyId));
+      
+      // Background sync
+      deleteDoc(storyRef).catch(err => {
+        console.warn("Background story delete pending:", err);
+      });
+    }
+  };
+
   const value = {
     currentUser,
     userData,
+    savedStories,
     loading,
     updateReadingLevel,
-    completeStory
+    completeStory,
+    saveStory,
+    deleteStory
   };
 
   return (
@@ -185,3 +243,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+
