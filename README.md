@@ -8,7 +8,7 @@ An AI-powered interactive literacy app built to support **UN SDG 4.6** — elimi
 
 ## Features
 
-- **Adaptive Story Engine** — Generates short, adult-appropriate stories at Beginner, Intermediate, and Advanced levels using Gemini 1.5 Flash.
+- **Adaptive Story Engine** — Generates short, adult-appropriate stories at Beginner, Intermediate, and Advanced levels using Gemini-2.5-flash-lite.
 - **Comprehension Quizzes** — Auto-generated 3-question multiple-choice quizzes after every story.
 - **Text-to-Speech** — Narrates the full story or individual words using the Web Speech API.
 - **Word-Level Interaction** — Click any word to hear its pronunciation with a visual highlight.
@@ -24,7 +24,7 @@ An AI-powered interactive literacy app built to support **UN SDG 4.6** — elimi
 |---|---|
 | Frontend | React 19 (TypeScript) + Vite 8 |
 | Styling | Bootstrap 5 + React-Bootstrap + React Icons |
-| AI Engine | Gemini 3 Flash|
+| AI Engine | gemini-2.5-flash-lite|
 | Backend | Firebase (Auth + Firestore) |
 | Offline | Service Workers (Vite PWA) + Firestore Offline Persistence |
 
