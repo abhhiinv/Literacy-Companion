@@ -52,3 +52,6 @@ public/workbox-*.js
 README.txt
 DEVELOPMENT.md
 DEVELOPMENT_LOG.md
+tsconfig.*
+skills-lock.json
+vite.config.ts
